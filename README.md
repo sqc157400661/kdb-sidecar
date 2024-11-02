@@ -2,10 +2,18 @@
 
 #### 介绍
 kdb需要使用的sidecar，包括但是不限于：
-1、MySQL initcontainer的 sidecar
-2、MySQL sidecar
-3、MySQL agent/cli
-4、PostgreSQL 的sidecar
+1. MySQL initcontainer的 sidecar
+2. MySQL sidecar 
+    1. init localroot用户
+    2. 创建系统默认用户，比如_super_admin和_monitor_user,_repl_user
+    3. 构建主从关系
+    4. 启动主从监控检测服务
+    5. 启动备份服务
+    6. 启动配置更新和生效服务
+3. MySQL agent/cli
+4. PostgreSQL 的sidecar
+
+
 
 #### 软件架构
 软件架构说明
