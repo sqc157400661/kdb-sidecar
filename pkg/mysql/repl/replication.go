@@ -13,6 +13,7 @@ import (
 type ReplicationService struct {
 	loopSecond  int
 	replConf    config.Replication
+	seeker      Seeker
 	engine      *xorm.Engine
 	executor    *mysql.Executor
 	startOnce   sync.Once
@@ -21,9 +22,10 @@ type ReplicationService struct {
 	refreshChan chan struct{}
 }
 
-func NewReplicationService(engine *xorm.Engine, replication config.Replication) *ReplicationService {
+func NewReplicationService(engine *xorm.Engine, replication config.Replication, seeker Seeker) *ReplicationService {
 	return &ReplicationService{
 		engine:      engine,
+		seeker:      seeker,
 		loopSecond:  5,
 		replConf:    replication,
 		refreshChan: make(chan struct{}, 0),
@@ -68,12 +70,28 @@ func (r *ReplicationService) run() {
 	}
 	if err != nil {
 		klog.Errorf("CheckSlaveStatus err:%s", err.Error())
+		err = r.autoRecoverMasterSlave()
+		if err != nil {
+			klog.Errorf("autoRecoverMasterSlave err:%s", err.Error())
+		}
 	}
 	// build master-slave
 	err = r.BuildMasterSlave()
 	if err != nil {
 		klog.Errorf("build master-slave err: %s", err.Error())
 	}
+}
+
+func (r *ReplicationService) autoRecoverMasterSlave() error {
+	hostInfo, err := r.seeker.GetHostInfoByHostname(r.replConf.Hostname)
+	if err != nil {
+		return err
+	}
+	if r.replConf.Host != hostInfo.Host {
+		r.replConf.Host = hostInfo.Host
+		r.refreshChan <- struct{}{}
+	}
+	return nil
 }
 
 func (r *ReplicationService) CheckSlaveStatus() (ready bool, err error) {

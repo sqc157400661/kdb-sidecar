@@ -8,6 +8,8 @@ type MySQLUser struct {
 }
 
 type Replication struct {
+	Hostname     string `yaml:"hostname" json:"hostname"`
+	Port         int    `yaml:"port" json:"port"`
 	Host         string `yaml:"host" json:"host"`
 	ReplUser     string `yaml:"crontab" json:"repl_user"`
 	ReplPassword string `yaml:"crontab" json:"repl_password"`
@@ -21,6 +23,12 @@ type Backup struct {
 	S3      S3Config  `yaml:"crontab" json:"s3"`
 }
 type MySQLConfig struct {
+	// Configure the data center address.
+	// If the configuration is assigned a value, it will be prioritized for use.
+	// For example, when automatically searching for the master node,
+	// grpc will be prioritized for interacting with the data center.
+	// Otherwise, pod information will be obtained through client go for querying.
+	//DataCenterGrpcAddr string `yaml:"datacenter_grpc_addr" json:"datacenter_grpc_addr"`
 	// root mysql user
 	RootUser string `yaml:"root_user" json:"root_user"`
 	// password of mysql root user

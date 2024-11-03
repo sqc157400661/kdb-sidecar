@@ -17,16 +17,22 @@ const (
 
 const ClusterIDEnv = "ClusterID"
 const MySQLServerIDEnv = "MySQLServerID"
+const K8SNamespaceEnv = "K8SNamespace"
+const InitMySQLRoleEnv = "InitMySQLRole"
 
 var ClusterID string
 var MySQLServerID string
 var MySQLPort int
+var K8SNamespace string
+var InitMySQLRole string
 
 func init() {
 	ClusterID = os.Getenv(ClusterIDEnv)
 	MySQLServerID = os.Getenv(MySQLLocalRootEnv)
 	portStr := os.Getenv(MySQLPortEnv)
 	MySQLPort, _ = strconv.Atoi(portStr)
+	K8SNamespace = os.Getenv(K8SNamespaceEnv)
+	InitMySQLRole = os.Getenv(InitMySQLRoleEnv)
 }
 
 // oss
