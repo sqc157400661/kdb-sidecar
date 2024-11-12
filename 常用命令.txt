@@ -1,0 +1,5 @@
+# windows
+docker buildx build -f hack/docker/Dockerfile . -t  kdbdeveloper/mysql-sidecar:v0.0.1
+
+SET GOOS=linux
+go build -ldflags="-w -s"  -o ./hack\docker\manager  ./cmd\sidecar\main.go

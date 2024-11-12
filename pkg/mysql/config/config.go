@@ -1,26 +1,26 @@
 package config
 
 type MySQLUser struct {
-	Username   string   `yaml:"crontab" json:"username"`
-	Password   string   `yaml:"crontab" json:"password"`
-	Host       string   `yaml:"crontab" json:"host"`
-	Privileges []string `yaml:"crontab" json:"privileges"`
+	Username   string   `yaml:"username" json:"username"`
+	Password   string   `yaml:"password" json:"password"`
+	Host       string   `yaml:"host" json:"host"`
+	Privileges []string `yaml:"privileges" json:"privileges"`
 }
 
 type Replication struct {
 	Hostname     string `yaml:"hostname" json:"hostname"`
 	Port         int    `yaml:"port" json:"port"`
 	Host         string `yaml:"host" json:"host"`
-	ReplUser     string `yaml:"crontab" json:"repl_user"`
-	ReplPassword string `yaml:"crontab" json:"repl_password"`
+	ReplUser     string `yaml:"repl_user" json:"repl_user"`
+	ReplPassword string `yaml:"repl_password" json:"repl_password"`
 }
 
 type OssConfig struct{}
 type S3Config struct{}
 type Backup struct {
 	Crontab string    `yaml:"crontab" json:"crontab"`
-	Oss     OssConfig `yaml:"crontab" json:"oss"`
-	S3      S3Config  `yaml:"crontab" json:"s3"`
+	Oss     OssConfig `yaml:"oss" json:"oss"`
+	S3      S3Config  `yaml:"s3" json:"s3"`
 }
 type MySQLConfig struct {
 	// Configure the data center address.
