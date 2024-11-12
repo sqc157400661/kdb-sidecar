@@ -5,10 +5,11 @@ LABEL description="kdb-sidecar"
 
 RUN microdnf install -y vim iputils
 
-RUN mkdir -p /home/admin/
+RUN mkdir -p /kdb/bin/ && mkdir -p /kdb/conf/
 
-COPY hack/docker/manager  /home/admin/
+COPY hack/docker/manager  /kdb/bin/
+COPY hack/scripts/*  /kdb/bin/
 
 WORKDIR /home/admin/
 
-RUN  chmod +x /home/admin/manager
+RUN  chmod +x /kdb/bin/manager
