@@ -49,7 +49,7 @@ func NewMySQLSidecarServerCmd() *cobra.Command {
 	cmd.Flags().StringVarP(&option.ConfigFile, "config", "c", "", "Set config file for sidecar service")
 	cmd.Flags().StringVarP(&option.RootUser, "user", "u", os.Getenv(config.MySQLLocalRootEnv), "Set root user of mysql for sidecar service")
 	cmd.Flags().StringVarP(&option.RootPasswd, "passwd", "p", os.Getenv(config.MySQLLocalRootPasswordEnv), "Set root user password of mysql for sidecar service")
-	cmd.Flags().StringVarP(&option.RootSocket, "socket", "s", "/u01/mysql.sock", "Set socket file to connect mysql")
+	cmd.Flags().StringVarP(&option.RootSocket, "socket", "s", "/u01/socket/mysqld.sock", "Set socket file to connect mysql")
 	cmd.Flags().IntVarP(&option.Mode, "mode", "m", 1, "Set mode of sidecar service,1 mean normal mode，2 mean panic mode")
 
 	if option.ConfigFile != "" {
@@ -79,7 +79,11 @@ func NewMySQLSidecarServerCmd() *cobra.Command {
 func (o *SidecarOption) run(args []string) (err error) {
 	// check if the root user can make a connection to the local database
 	var engine *xorm.Engine
-	engine, err = mysql.NewMySQLEngine(mysql.ConnectInfo{}, true, false)
+	engine, err = mysql.NewMySQLEngine(mysql.ConnectInfo{
+		Host:   "127.0.0.1",
+		Port:   3306,
+		Socket: o.RootSocket,
+	}, true, false)
 	if err != nil {
 		return err
 	}
