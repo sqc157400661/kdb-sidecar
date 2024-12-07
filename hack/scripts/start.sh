@@ -19,3 +19,5 @@ if [[ "${Engine}" == "MYSQL" || "${Engine}" == "mysql" || "${Engine}" == "MySQL"
 else
     /kdb/bin/manager PGSidecar -c "${ConfigFile}"
 fi
+
+sleep 50000

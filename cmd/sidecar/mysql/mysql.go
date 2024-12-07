@@ -49,7 +49,7 @@ func NewMySQLSidecarServerCmd() *cobra.Command {
 	cmd.Flags().StringVarP(&option.ConfigFile, "config", "c", "", "Set config file for sidecar service")
 	cmd.Flags().StringVarP(&option.RootUser, "user", "u", os.Getenv(config.MySQLLocalRootEnv), "Set root user of mysql for sidecar service")
 	cmd.Flags().StringVarP(&option.RootPasswd, "passwd", "p", os.Getenv(config.MySQLLocalRootPasswordEnv), "Set root user password of mysql for sidecar service")
-	cmd.Flags().StringVarP(&option.RootSocket, "socket", "s", "/u01/socket/mysqld.sock", "Set socket file to connect mysql")
+	cmd.Flags().StringVarP(&option.RootSocket, "socket", "s", "/kdbdata/socket/mysqld.sock", "Set socket file to connect mysql")
 	cmd.Flags().IntVarP(&option.Mode, "mode", "m", 1, "Set mode of sidecar service,1 mean normal mode，2 mean panic mode")
 
 	if option.ConfigFile != "" {

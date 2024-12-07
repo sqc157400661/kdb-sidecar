@@ -1,6 +1,6 @@
 DockerfilePROJECT:=kdb-sidecar
 
-MYSQL_SIDECAR_IMAGE_NAME ?= kdbdeveloper/mysql-sidecar:v0.0.2
+MYSQL_SIDECAR_IMAGE_NAME ?= kdbdeveloper/mysql-sidecar:v0.0.4
 
 .PHONY: mysql
 mysql:
@@ -9,7 +9,7 @@ mysql:
 .PHONY: mysql-docker
 mysql-docker: mysql
 	docker build -f hack/docker/Dockerfile -t $(MYSQL_SIDECAR_IMAGE_NAME) .
-	docker push  $(MYSQL_SIDECAR_IMAGE_NAME)
+	#docker push  $(MYSQL_SIDECAR_IMAGE_NAME)
 
 
 
