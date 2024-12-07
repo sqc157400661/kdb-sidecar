@@ -2,7 +2,7 @@
 
 # set default values
 Engine="MYSQL"
-ConfigFile="/kdb/conf/config.yaml"
+ConfigFile="/etc/config/config.yaml"
 
 # update configuration file path based on environment variables
 if [ -n "${CONFIG_FILE_ENV}" ]; then

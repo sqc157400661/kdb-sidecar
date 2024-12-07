@@ -80,6 +80,8 @@ func (o *SidecarOption) run(args []string) (err error) {
 	// check if the root user can make a connection to the local database
 	var engine *xorm.Engine
 	engine, err = mysql.NewMySQLEngine(mysql.ConnectInfo{
+		User:   o.RootUser,
+		Passwd: o.RootPasswd,
 		Host:   "127.0.0.1",
 		Port:   3306,
 		Socket: o.RootSocket,
