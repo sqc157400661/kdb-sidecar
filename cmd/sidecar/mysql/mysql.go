@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
 	"github.com/sqc157400661/helper/mysql"
@@ -33,14 +34,36 @@ type SidecarOption struct {
 }
 
 func NewMySQLSidecarServerCmd() *cobra.Command {
-	var option SidecarOption
+	var option = SidecarOption{}
 	cmd := &cobra.Command{
 		Use:   "MySQLSidecar",
 		Short: "Run mysql sidecar server",
 		Long:  `Run mysql sidecar server`,
 		Run: func(cmd *cobra.Command, args []string) {
+			if option.ConfigFile != "" {
+				file, err := os.ReadFile(option.ConfigFile)
+				if err != nil {
+					util.PrintFatalError(err)
+				}
+				var conf config.MySQLConfig
+				err = yaml.Unmarshal(file, &conf)
+				if err != nil {
+					util.PrintFatalError(err)
+				}
+				if option.RootUser != "" {
+					conf.RootUser = option.RootUser
+				}
+				if option.RootPasswd != "" {
+					conf.RootPasswd = option.RootPasswd
+				}
+				if option.RootSocket != "" {
+					conf.RootSocket = option.RootSocket
+				}
+				option.config = conf
+			}
 			err := option.run(args)
 			if err != nil {
+				klog.Error(err)
 				klog.Flush()
 				util.PrintFatalError(err)
 			}
@@ -51,28 +74,6 @@ func NewMySQLSidecarServerCmd() *cobra.Command {
 	cmd.Flags().StringVarP(&option.RootPasswd, "passwd", "p", os.Getenv(config.MySQLLocalRootPasswordEnv), "Set root user password of mysql for sidecar service")
 	cmd.Flags().StringVarP(&option.RootSocket, "socket", "s", "/kdbdata/socket/mysqld.sock", "Set socket file to connect mysql")
 	cmd.Flags().IntVarP(&option.Mode, "mode", "m", 1, "Set mode of sidecar service,1 mean normal mode，2 mean panic mode")
-
-	if option.ConfigFile != "" {
-		file, err := os.ReadFile(option.ConfigFile)
-		if err != nil {
-			util.PrintFatalError(err)
-		}
-		var conf config.MySQLConfig
-		err = yaml.Unmarshal(file, &conf)
-		if err != nil {
-			util.PrintFatalError(err)
-		}
-		if option.RootUser != "" {
-			conf.RootUser = option.RootUser
-		}
-		if option.RootPasswd != "" {
-			conf.RootPasswd = option.RootPasswd
-		}
-		if option.RootSocket != "" {
-			conf.RootSocket = option.RootSocket
-		}
-		option.config = conf
-	}
 	return cmd
 }
 
@@ -80,11 +81,11 @@ func (o *SidecarOption) run(args []string) (err error) {
 	// check if the root user can make a connection to the local database
 	var engine *xorm.Engine
 	engine, err = mysql.NewMySQLEngine(mysql.ConnectInfo{
-		User:   o.RootUser,
-		Passwd: o.RootPasswd,
+		User:   o.config.RootUser,
+		Passwd: o.config.RootPasswd,
 		Host:   "127.0.0.1",
 		Port:   3306,
-		Socket: o.RootSocket,
+		Socket: o.config.RootSocket,
 	}, true, false)
 	if err != nil {
 		return err
@@ -94,7 +95,6 @@ func (o *SidecarOption) run(args []string) (err error) {
 	if err != nil {
 		return err
 	}
-
 	// modify mysql.cnf config file
 	err = o.modifyMySQLCNFByRole()
 	if err != nil {
@@ -106,12 +106,16 @@ func (o *SidecarOption) run(args []string) (err error) {
 	if err != nil {
 		return err
 	}
+	fmt.Println(3)
 	seeker := repl.NewKubeSeeker(cliSet)
 	replSvc := repl.NewReplicationService(engine, o.config.Replication, seeker)
+	fmt.Println(4)
 	replSvc.Start()
 	// start health check service
 	healthSvc := health.NewCheckService(engine, 3)
+	fmt.Println(5)
 	healthSvc.Start()
+	fmt.Println(6)
 	// detecting and building data backup service
 	util.ExitSignalHandler(func() {
 		replSvc.Stop()

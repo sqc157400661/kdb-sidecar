@@ -1,6 +1,6 @@
 DockerfilePROJECT:=kdb-sidecar
 
-MYSQL_SIDECAR_IMAGE_NAME ?= kdbdeveloper/mysql-sidecar:v0.0.6
+MYSQL_SIDECAR_IMAGE_NAME ?= kdbdeveloper/mysql-sidecar:v0.0.8
 
 .PHONY: mysql
 mysql:
