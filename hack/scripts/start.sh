@@ -20,4 +20,4 @@ else
     /kdb/bin/manager PGSidecar -c "${ConfigFile}"
 fi
 
-sleep 30
+sleep 120

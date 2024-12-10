@@ -29,7 +29,7 @@ func (c *Handler) Do() error {
 	}
 	for _, user := range c.users {
 		sql := fmt.Sprintf(config.GrantGlobalUser, strings.Join(user.Privileges, ","), user.Username, user.Host, user.Password)
-		_, err = c.engine.SQL(sql).Exec()
+		_, err = c.engine.Exec(sql)
 		if err != nil {
 			return err
 		}

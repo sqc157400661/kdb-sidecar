@@ -106,10 +106,8 @@ func (o *SidecarOption) run(args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	fmt.Println(3)
 	seeker := repl.NewKubeSeeker(cliSet)
 	replSvc := repl.NewReplicationService(engine, o.config.Replication, seeker)
-	fmt.Println(4)
 	replSvc.Start()
 	// start health check service
 	healthSvc := health.NewCheckService(engine, 3)

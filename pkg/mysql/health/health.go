@@ -61,11 +61,11 @@ func (s *CheckService) CreateTableIfNotExist() error {
 	if err != nil {
 		return err
 	}
-	_, err = s.engine.SQL("use mysql").Exec()
+	_, err = s.engine.Exec("use mysql")
 	if err != nil {
 		return err
 	}
-	_, err = s.engine.SQL(CreateHealthTableSQL).Exec()
+	_, err = s.engine.Exec(CreateHealthTableSQL)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (s *CheckService) doCheck() error {
 	if err != nil {
 		return err
 	}
-	_, err = s.engine.SQL(CheckSQL).Exec()
+	_, err = s.engine.Exec(CheckSQL)
 	// TODO 记录Log
 	return err
 }
