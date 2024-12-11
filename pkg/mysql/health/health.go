@@ -1,6 +1,7 @@
 package health
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/sqc157400661/helper/mysql"
 	"github.com/sqc157400661/util"
@@ -43,6 +44,7 @@ func (s *CheckService) Start() {
 			defer ticker.Stop()
 			select {
 			case <-ticker.C:
+				fmt.Println("-----------check---------")
 				err = s.doCheck()
 				if err != nil {
 					klog.Errorf("check health err: %s", err.Error())
@@ -80,6 +82,7 @@ func (s *CheckService) doCheck() error {
 	}
 	_, err = s.engine.Exec(CheckSQL)
 	// TODO 记录Log
+	fmt.Println("-----check end-----", err)
 	return err
 }
 

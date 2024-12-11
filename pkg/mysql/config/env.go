@@ -10,21 +10,23 @@ import (
 */
 
 const (
-	MySQLPortEnv              = "MySQLPort"
-	MySQLLocalRootEnv         = "MySQLLocalRoot"
-	MySQLLocalRootPasswordEnv = "MySQLLocalRootPassword"
+	MySQLPortEnv              = "KDB_PORT"
+	MySQLLocalRootEnv         = "MYSQL_LOCAL_ROOT"
+	MySQLLocalRootPasswordEnv = "MYSQL_LOCAL_ROOT_PASSWORD"
 )
 
-const ClusterIDEnv = "ClusterID"
-const MySQLServerIDEnv = "MySQLServerID"
-const K8SNamespaceEnv = "K8SNamespace"
-const InitMySQLRoleEnv = "InitMySQLRole"
+const ClusterIDEnv = "CLUSTER_ID"
+const MySQLServerIDEnv = "MYSQL_SERVER_ID"
+const K8SNamespaceEnv = "NAMESPACE"
+const InitMySQLRoleEnv = "ROLE"
+const HostnameEnv = "KDB_HOSTNAME"
 
 var ClusterID string
 var MySQLServerID string
 var MySQLPort int
 var K8SNamespace string
 var InitMySQLRole string
+var Hostname string
 
 func init() {
 	ClusterID = os.Getenv(ClusterIDEnv)
@@ -33,6 +35,7 @@ func init() {
 	MySQLPort, _ = strconv.Atoi(portStr)
 	K8SNamespace = os.Getenv(K8SNamespaceEnv)
 	InitMySQLRole = os.Getenv(InitMySQLRoleEnv)
+	Hostname = os.Getenv(HostnameEnv)
 }
 
 // oss

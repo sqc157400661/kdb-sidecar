@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
 	"github.com/sqc157400661/helper/mysql"
@@ -111,9 +110,7 @@ func (o *SidecarOption) run(args []string) (err error) {
 	replSvc.Start()
 	// start health check service
 	healthSvc := health.NewCheckService(engine, 3)
-	fmt.Println(5)
 	healthSvc.Start()
-	fmt.Println(6)
 	// detecting and building data backup service
 	util.ExitSignalHandler(func() {
 		replSvc.Stop()
