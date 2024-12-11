@@ -62,6 +62,10 @@ func (r *ReplicationService) run() {
 		klog.Info("master host is empty, skipped replication")
 		return
 	}
+	if r.replConf.Host == config.Hostname {
+		klog.Info("master host equal current host, skipped replication")
+		return
+	}
 	// verify master-slave status
 	ready, err := r.CheckSlaveStatus()
 	if ready {
