@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
 	"github.com/sqc157400661/helper/mysql"
@@ -9,6 +10,7 @@ import (
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/health"
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/repl"
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/user"
+	"github.com/sqc157400661/kdb-sidecar/pkg/service"
 	"github.com/sqc157400661/util"
 	"gopkg.in/ini.v1"
 	"gopkg.in/yaml.v3"
@@ -105,16 +107,35 @@ func (o *SidecarOption) run(args []string) (err error) {
 	if err != nil {
 		return err
 	}
+	services := InitCommonService(engine)
 	seeker := repl.NewKubeSeeker(cliSet)
-	replSvc := repl.NewReplicationService(engine, o.config.Replication, seeker)
-	replSvc.Start()
-	// start health check service
-	healthSvc := health.NewCheckService(engine, 3)
-	healthSvc.Start()
+	switch config.DeployArch {
+	case internal.MySQLMasterSlave01DeployArch:
+		services = append(services, repl.NewReplicationService(engine, o.config.Replication, seeker))
+	case internal.MySQLMasterSlave02DeployArch:
+		services = append(services, repl.NewReplicationService(engine, o.config.Replication, seeker))
+	case internal.MySQLSingleDeployArch:
+	case internal.MySQLMGRDeployArch:
+	default:
+		err = fmt.Errorf("not deployArch")
+		return err
+	}
+	//services start
+	for _, svc := range services {
+		err = svc.Start()
+		if err != nil {
+			return err
+		}
+	}
 	// detecting and building data backup service
 	util.ExitSignalHandler(func() {
-		replSvc.Stop()
-		healthSvc.Stop()
+		// services stop
+		for _, svc := range services {
+			err = svc.Stop()
+			if err != nil {
+				klog.Error(err)
+			}
+		}
 	})
 	return nil
 }
@@ -136,4 +157,10 @@ func (o *SidecarOption) modifyMySQLCNFByRole() error {
 	}
 	err = iniConf.SaveTo(o.config.MySQLCNFFile)
 	return err
+}
+
+func InitCommonService(engine *xorm.Engine) (services []service.Service) {
+	// start health check service
+	services = append(services, health.NewCheckService(engine, 3))
+	return
 }

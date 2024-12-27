@@ -34,7 +34,7 @@ func NewReplicationService(engine *xorm.Engine, replication config.Replication, 
 }
 
 // Start service of replication
-func (r *ReplicationService) Start() {
+func (r *ReplicationService) Start() error {
 	r.startOnce.Do(func() {
 		go func() {
 			ticker := time.NewTicker(time.Duration(r.loopSecond) * time.Second)
@@ -54,6 +54,7 @@ func (r *ReplicationService) Start() {
 			}
 		}()
 	})
+	return nil
 }
 
 func (r *ReplicationService) run() {
@@ -119,10 +120,11 @@ func (r *ReplicationService) BuildMasterSlave() (err error) {
 }
 
 // Stop service of replication
-func (r *ReplicationService) Stop() {
+func (r *ReplicationService) Stop() error {
 	r.stopOnce.Do(func() {
 		close(r.stopChan)
 	})
+	return nil
 }
 
 // RefreshMaster when the master changes, refresh  master

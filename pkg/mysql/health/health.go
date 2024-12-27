@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/sqc157400661/helper/mysql"
-	"github.com/sqc157400661/util"
 	"k8s.io/klog/v2"
 	"sync"
 	"time"
@@ -33,11 +32,12 @@ func NewCheckService(engine *xorm.Engine, loopSecond int) *CheckService {
 }
 
 // Start  the health check service
-func (s *CheckService) Start() {
+func (s *CheckService) Start() error {
+	var err error
 	s.startOnce.Do(func() {
-		err := s.CreateTableIfNotExist()
+		err = s.CreateTableIfNotExist()
 		if err != nil {
-			util.PrintFatalError(err)
+			return
 		}
 		go func() {
 			ticker := time.NewTicker(time.Duration(s.loopSecond) * time.Second)
@@ -55,6 +55,7 @@ func (s *CheckService) Start() {
 			}
 		}()
 	})
+	return err
 }
 
 // CreateTableIfNotExist create health check table if not exist
@@ -87,8 +88,9 @@ func (s *CheckService) doCheck() error {
 }
 
 // Stop  the health check service
-func (s *CheckService) Stop() {
+func (s *CheckService) Stop() error {
 	s.stopOnce.Do(func() {
 		close(s.stopChan)
 	})
+	return nil
 }
