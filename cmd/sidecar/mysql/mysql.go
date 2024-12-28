@@ -111,6 +111,7 @@ func (o *SidecarOption) run(args []string) (err error) {
 	seeker := repl.NewKubeSeeker(cliSet)
 	switch config.DeployArch {
 	case internal.MySQLMasterSlave01DeployArch:
+		// todo 和 下面做区分
 		services = append(services, repl.NewReplicationService(engine, o.config.Replication, seeker))
 	case internal.MySQLMasterSlave02DeployArch:
 		services = append(services, repl.NewReplicationService(engine, o.config.Replication, seeker))
