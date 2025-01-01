@@ -6,8 +6,10 @@ const (
 )
 
 const (
-	MySQLSingleDeployArch        = "Single"
-	MySQLMasterSlave01DeployArch = "Master-Slave-01"
-	MySQLMasterSlave02DeployArch = "Master-Slave-02"
+	MySQLSingleDeployArch = "Single"
+	// MySQLMasterSlaveDeployArch Simple Master-Slave,Master->Salve
+	MySQLMasterSlaveDeployArch = "Master-Slave"
+	// MySQLMasterReplicaDeployArch Master-Replica,Master<->Replica
+	MySQLMasterReplicaDeployArch = "Master-Replica"
 	MySQLMGRDeployArch           = "MGR"
 )

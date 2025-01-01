@@ -110,7 +110,7 @@ func (o *SidecarOption) run(args []string) (err error) {
 	services := InitCommonService(engine)
 	seeker := repl.NewKubeSeeker(cliSet)
 	switch config.DeployArch {
-	case internal.MySQLMasterSlave01DeployArch, internal.MySQLMasterSlave02DeployArch:
+	case internal.MySQLMasterReplicaDeployArch, internal.MySQLMasterSlaveDeployArch:
 		services = append(services, repl.NewReplicationService(engine, o.config.Replication, seeker))
 	case internal.MySQLSingleDeployArch:
 	case internal.MySQLMGRDeployArch:
