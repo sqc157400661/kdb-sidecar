@@ -6,6 +6,6 @@ type HostInfo struct {
 	Port int    `yaml:"port" json:"port"`
 }
 type Seeker interface {
-	GetHostInfoByHostname(hostname string) (*HostInfo, error)
+	GetHostInfoByPodName(podName string) (*HostInfo, error)
 	GetHostInfoByClusterID(id string) ([]*HostInfo, error)
 }

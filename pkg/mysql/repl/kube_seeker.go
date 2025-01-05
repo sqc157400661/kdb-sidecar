@@ -18,8 +18,8 @@ func NewKubeSeeker(clientSet *kubernetes.Clientset) *KubeSeeker {
 	return &KubeSeeker{clientSet: clientSet}
 }
 
-func (s *KubeSeeker) GetHostInfoByHostname(hostname string) (host *HostInfo, err error) {
-	pod, err := s.clientSet.CoreV1().Pods(config.K8SNamespace).Get(context.TODO(), hostname, metav1.GetOptions{})
+func (s *KubeSeeker) GetHostInfoByPodName(podName string) (host *HostInfo, err error) {
+	pod, err := s.clientSet.CoreV1().Pods(config.K8SNamespace).Get(context.TODO(), podName, metav1.GetOptions{})
 	if err != nil {
 		return
 	}

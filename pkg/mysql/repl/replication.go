@@ -88,7 +88,7 @@ func (r *ReplicationService) run() {
 }
 
 func (r *ReplicationService) autoRecoverMasterSlave() error {
-	hostInfo, err := r.seeker.GetHostInfoByHostname(r.replConf.Hostname)
+	hostInfo, err := r.seeker.GetHostInfoByPodName(r.replConf.PodName)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ type MySQLUser struct {
 }
 
 type Replication struct {
-	Hostname     string `yaml:"hostname" json:"hostname"`
+	PodName      string `yaml:"pod_name" json:"pod_name"`
 	Port         int    `yaml:"port" json:"port"`
 	Host         string `yaml:"host" json:"host"`
 	ReplUser     string `yaml:"repl_user" json:"repl_user"`
@@ -35,6 +35,10 @@ type MySQLConfig struct {
 	RootPasswd string `yaml:"root_password" json:"root_password"`
 	// the socket file to connect mysql
 	RootSocket string `yaml:"root_socket" json:"root_socket"`
+	// the current config version of the KDBInstance Sidecar
+	CurrentVersion string `yaml:"current_version" json:"current_version"`
+	// the config version to be updated for the KDBInstance Sidecar
+	UpdateVersion string `yaml:"update_version" json:"update_version"`
 	// the file of mysql cnf configuration
 	MySQLCNFFile string `yaml:"mysql_cnf_file" json:"mysql_cnf_file"`
 	// Initialize  global users
