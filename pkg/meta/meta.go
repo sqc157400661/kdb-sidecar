@@ -9,6 +9,16 @@ type Manager struct {
 	Db *gorm.DB
 }
 
+var manager *Manager
+
+func init() {
+	manager, _ = NewMetaManager()
+}
+
+func DB() *gorm.DB {
+	return manager.Db
+}
+
 func NewMetaManager() (svc *Manager, err error) {
 	// 连接到 SQLite 数据库
 	db, err := gorm.Open(sqlite.Open("metadata.db"), &gorm.Config{})
