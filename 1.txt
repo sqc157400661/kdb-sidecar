@@ -1,0 +1,135 @@
+package main
+
+import (
+	"fmt"
+	"log"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
+)
+
+// DBConfig MySQL配置结构体
+// DBConfig structure for MySQL configuration
+type DBConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+	Database string
+}
+
+// MySQLConn MySQL连接结构体
+// MySQL connection structure
+type MySQLConn struct {
+	Engine *xorm.Engine
+}
+
+// ConnectMySQL 使用go-xorm连接MySQL数据库
+// Connect to MySQL database using go-xorm
+func ConnectMySQL(config DBConfig) (*MySQLConn, error) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", config.User, config.Password, config.Host, config.Port, config.Database)
+	engine, err := xorm.NewEngine("mysql", dsn)
+	if err != nil {
+		return nil, err
+	}
+	engine.ShowSQL(true) // 显示SQL查询日志，便于调试
+	return &MySQLConn{Engine: engine}, nil
+}
+
+// GetMasterInfo 获取主节点信息
+// Fetches master information from a slave node
+func (conn *MySQLConn) GetMasterInfo() (string, error) {
+	var masterHost string
+	// 使用xorm查询SHOW SLAVE STATUS
+	// Use xorm to query SHOW SLAVE STATUS
+	results, err := conn.Engine.Query("SHOW SLAVE STATUS")
+	if err != nil {
+		return "", err
+	}
+	if len(results) > 0 {
+		masterHost = string(results[0]["Master_Host"])
+		return masterHost, nil
+	}
+	return "", fmt.Errorf("No master found")
+}
+
+// GetSlavesInfo 获取从节点信息
+// Fetches slave information from a master node
+func (conn *MySQLConn) GetSlavesInfo() ([]string, error) {
+	var slaves []string
+	// 使用xorm查询SHOW PROCESSLIST
+	// Use xorm to query SHOW PROCESSLIST
+	results, err := conn.Engine.Query("SHOW PROCESSLIST")
+	if err != nil {
+		return nil, err
+	}
+
+	for _, row := range results {
+		state := string(row["State"])
+		if state == "Slave" {
+			slaves = append(slaves, string(row["Host"]))
+		}
+	}
+	return slaves, nil
+}
+
+// RecursiveDiscover 拓扑递归发现
+// Recursively discover the topology starting from the given node
+func RecursiveDiscover(config DBConfig, nodeHost string) {
+	// 连接到MySQL数据库
+	// Connect to MySQL database
+	conn, err := ConnectMySQL(config)
+	if err != nil {
+		log.Printf("Error connecting to node %s: %v\n", nodeHost, err)
+		return
+	}
+	defer conn.Engine.Close()
+
+	// 获取主节点信息
+	// Get master information
+	masterHost, err := conn.GetMasterInfo()
+	if err != nil {
+		log.Printf("Error fetching master info for node %s: %v\n", nodeHost, err)
+		return
+	}
+	log.Printf("Node %s's master is: %s\n", nodeHost, masterHost)
+
+	// 获取从节点信息
+	// Get slave nodes information
+	slaves, err := conn.GetSlavesInfo()
+	if err != nil {
+		log.Printf("Error fetching slave info for node %s: %v\n", nodeHost, err)
+		return
+	}
+	log.Printf("Slaves of node %s: %v\n", nodeHost, slaves)
+
+	// 递归地查询每个从节点的拓扑
+	// Recursively discover the topology for each slave node
+	for _, slave := range slaves {
+		RecursiveDiscover(config, slave)
+	}
+}
+
+// DiscoverMasterAndSlaves 从从节点获取主节点及所有从节点信息
+// Discover the master node and all slaves from a given slave node
+func DiscoverMasterAndSlaves(config DBConfig) {
+	// 开始递归拓扑发现
+	// Start recursive topology discovery
+	RecursiveDiscover(config, config.Host)
+}
+
+func main() {
+	// 示例配置：MySQL主机、端口、用户名、密码和数据库
+	// Example configuration: MySQL host, port, user, password, and database
+	config := DBConfig{
+		Host:     "localhost",
+		Port:     "3306",
+		User:     "root",
+		Password: "your_password",
+		Database: "mysql",
+	}
+
+	// 调用拓扑发现功能
+	// Call topology discovery function
+	DiscoverMasterAndSlaves(config)
+}
