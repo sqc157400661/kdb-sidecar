@@ -1,11 +1,17 @@
 package meta
 
 type Instance struct {
-	PodName string `gorm:"type:varchar(100)"`
-	PodIP   string `gorm:"type:varchar(100)"`
-	Host    string `gorm:"type:varchar(200)"`
-	Port    int
-	Role    string `gorm:"type:varchar(20)"`
-	Status  string `gorm:"type:varchar(50)"`
-	Extra   string `gorm:"type:varchar(255)"`
+	ID        string `gorm:"type:varchar(100)" json:"id"`
+	ClusterID string `gorm:"type:varchar(100)" json:"clusterID"`
+	MasterID  string `gorm:"type:varchar(100)" json:"masterID"`
+	ServerID  int    `gorm:"type:int(100)" json:"serverID"`
+	PodName   string `gorm:"type:varchar(100)" json:"podName"`
+	PodIP     string `gorm:"type:varchar(100)" json:"podIP"`
+	Host      string `gorm:"type:varchar(200)" json:"host"`
+	Port      int    `gorm:"type:int(100)" json:"port"`
+	Role      string `gorm:"type:varchar(20)" json:"role"`
+	Version   string `gorm:"type:varchar(20)" json:"version"`
+	ReadOnly  bool   `gorm:"type:bool" json:"readOnly"`
+	Status    string `gorm:"type:varchar(50)" json:"status"`
+	Extra     string `gorm:"type:varchar(255)" json:"extra"`
 }
