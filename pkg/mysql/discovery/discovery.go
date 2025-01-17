@@ -1,6 +1,9 @@
 package discovery
 
-import "github.com/sqc157400661/helper/mysql"
+import (
+	"github.com/go-xorm/xorm"
+	"github.com/sqc157400661/helper/mysql"
+)
 
 type Discovery interface {
 }
@@ -14,8 +17,19 @@ func (d *DiscoverManager) GetMasterInfo() {
 
 }
 
-func (d *DiscoverManager) GetSlavesInfo() (slaves []string, err error) {
-	executor := mysql.NewExecutorByEngine(nil) // todo add engine
+func (d *DiscoverManager) GetSlavesInfo(host string) (slaves []string, err error) {
+	// todo get instance info by host?
+	var engine *xorm.Engine
+	engine, err = mysql.NewMySQLEngine(mysql.ConnectInfo{
+		User:   d.ReplUser,
+		Passwd: d.ReplPassword,
+		Host:   host,
+		Port:   3306,
+	}, true, false)
+	if err != nil {
+		return
+	}
+	executor := mysql.NewExecutorByEngine(engine)
 	results, err := executor.ShowProcesslist()
 	if err != nil {
 		return
