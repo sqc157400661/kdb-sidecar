@@ -61,7 +61,7 @@ require (
 require (
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/sqc157400661/helper v0.0.5
+	github.com/sqc157400661/helper v0.0.6
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.25.0
 	k8s.io/client-go v0.25.0

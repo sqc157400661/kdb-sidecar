@@ -1,17 +1,18 @@
 package meta
 
 type Instance struct {
-	ID        string `gorm:"type:varchar(100)" json:"id"`
-	ClusterID string `gorm:"type:varchar(100)" json:"clusterID"`
-	MasterID  string `gorm:"type:varchar(100)" json:"masterID"`
-	ServerID  int    `gorm:"type:int(100)" json:"serverID"`
-	PodName   string `gorm:"type:varchar(100)" json:"podName"`
-	PodIP     string `gorm:"type:varchar(100)" json:"podIP"`
-	Host      string `gorm:"type:varchar(200)" json:"host"`
-	Port      int    `gorm:"type:int(100)" json:"port"`
-	Role      string `gorm:"type:varchar(20)" json:"role"`
-	Version   string `gorm:"type:varchar(20)" json:"version"`
-	ReadOnly  bool   `gorm:"type:bool" json:"readOnly"`
-	Status    string `gorm:"type:varchar(50)" json:"status"`
-	Extra     string `gorm:"type:varchar(255)" json:"extra"`
+	ID         string `xorm:"varchar(100) 'id'" json:"id"`
+	ClusterID  string `xorm:"varchar(100) 'cluster_id'" json:"clusterID"`
+	MasterID   string `xorm:"varchar(100) 'master_id'" json:"masterID"`
+	ServerUUID string `xorm:"varchar(100) 'server_uuid'" json:"serverUUID"`
+	ServerID   int    `xorm:"int 'server_id'" json:"serverID"`
+	PodName    string `xorm:"varchar(100) 'pod_name'" json:"podName"`
+	PodIP      string `xorm:"varchar(100) 'pod_ip'" json:"podIP"`
+	Host       string `xorm:"varchar(200) 'host'" json:"host"`
+	Port       int    `xorm:"int 'port'" json:"port"`
+	Role       string `xorm:"varchar(20) 'role'" json:"role"`
+	Version    string `xorm:"varchar(20) 'version'" json:"version"`
+	ReadOnly   bool   `xorm:"bool 'read_only'" json:"readOnly"`
+	Status     string `xorm:"varchar(50) 'status'" json:"status"`
+	Extra      string `xorm:"varchar(255) 'extra'" json:"extra"`
 }
