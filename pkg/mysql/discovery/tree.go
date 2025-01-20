@@ -4,6 +4,7 @@ import "sync"
 
 type InstanceNode struct {
 	Host     string
+	Port     int
 	IsMaster bool
 	Dept     int
 	Master   *InstanceNode

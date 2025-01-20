@@ -18,16 +18,37 @@ type DiscoverManager struct {
 	sync.RWMutex
 }
 
-func (d *DiscoverManager) resolvedMasterInfo() error {
+func (d *DiscoverManager) resolvedMasterInfo() (rootNode *InstanceNode, err error) {
 	currentExecutor, err := d.getExecutor(d.currentHost)
 	if err != nil {
-		return err
+		return
 	}
-	var masterInfo string
-
+	var slaveStatus mysql.SlaveStatus
+	slaveStatus, err = currentExecutor.ShowSlaveStatus()
+	if err != nil {
+		return
+	}
+	rootNode = &InstanceNode{}
+	for slaveStatus.MasterHost != "" {
+		rootNode.Host = slaveStatus.MasterHost
+		rootNode.Port = slaveStatus.MasterPort
+		masterExecutor, err := d.getExecutor(rootNode.Host)
+		if err != nil {
+			return
+		}
+		slaveStatus, err = masterExecutor.ShowSlaveStatus()
+		if err != nil {
+			return
+		}
+		if slaveStatus.MasterHost == d.currentHost {
+			break
+		}
+	}
+	return
 }
 
 func (d *DiscoverManager) findSlavesInfo(host string) (slaves []string, err error) {
+	// todo 根据rootNode循环查找其从实例
 	var executor *mysql.Executor
 	executor, err = d.getExecutor(host)
 	if err != nil {
