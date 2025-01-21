@@ -3,12 +3,23 @@ package discovery
 import "sync"
 
 type InstanceNode struct {
-	Host     string
-	Port     int
-	IsMaster bool
-	Dept     int
-	Master   *InstanceNode
-	Slaves   []*InstanceNode
+	Host       string
+	Port       int
+	IsReadonly bool
+	IsMaster   bool
+	IsBad      bool
+	Dept       int
+	// ShadowMaster Hot backup node, only used in the case of dual primary nodes
+	ShadowMaster *InstanceNode
+	Master       *InstanceNode
+	Slaves       []*InstanceNode
+}
+
+func (in *InstanceNode) Equal(out *InstanceNode) bool {
+	if in.Host == out.Host && in.Port == out.Port {
+		return true
+	}
+	return false
 }
 
 // Tree 管理树形结构
@@ -19,30 +30,74 @@ type Tree struct {
 }
 
 // NewTree 创建一个新的树实例
-func NewTree(rootHost string) *Tree {
-	root := &InstanceNode{Host: rootHost}
+func NewTree(root *InstanceNode) *Tree {
+	if root == nil {
+		root = &InstanceNode{}
+	}
 	return &Tree{
 		root:  root,
-		nodes: map[string]*InstanceNode{rootHost: root},
+		nodes: map[string]*InstanceNode{root.Host: root},
 	}
 }
 
-// AddNode 向树中添加一个子节点，指定父节点ID
-func (t *Tree) AddNode(parentHost, host string) {
+func (t *Tree) Exist(node *InstanceNode) bool {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+	_, exists := t.nodes[node.Host]
+	return exists
+}
+
+func (t *Tree) addNodeIfNotExist(node *InstanceNode) {
+	if node == nil {
+		return
+	}
 	t.mu.Lock()
 	defer t.mu.Unlock()
-
-	// 如果父节点不存在，创建一个新的父节点
-	parentNode, exists := t.nodes[parentHost]
-	if !exists {
-		parentNode = &InstanceNode{Host: parentHost}
-		t.nodes[parentHost] = parentNode
+	if !t.Exist(node) {
+		t.nodes[node.Host] = node
 	}
+}
 
-	// 创建子节点
-	childNode := &InstanceNode{Host: host, Master: parentNode}
-	parentNode.Slaves = append(parentNode.Slaves, childNode)
-
-	// 将子节点加入到树中
-	t.nodes[host] = childNode
+func (t *Tree) AddChildNode(parent, child *InstanceNode) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if child == nil {
+		return
+	}
+	if t.Exist(child) && t.Exist(parent) {
+		// master <-> shadow master
+		if parent.Master.Equal(child) {
+			dept := parent.Dept
+			if child.Dept != 0 && child.Dept < dept {
+				dept = child.Dept
+			}
+			parent.Dept = dept
+			child.Dept = dept
+			if parent.IsReadonly {
+				parent.Master = child
+				child.Master = nil
+				child.ShadowMaster = parent
+			} else if child.IsReadonly {
+				parent.Master = nil
+				parent.ShadowMaster = child
+				child.Master = parent
+			} else {
+				parent.ShadowMaster = child
+				child.ShadowMaster = parent
+				parent.IsBad = true
+				child.IsBad = true
+			}
+		}
+		return
+	}
+	t.addNodeIfNotExist(parent)
+	t.addNodeIfNotExist(child)
+	if parent == nil {
+		t.root = child
+	} else {
+		child.Master = parent
+		child.Dept = parent.Dept + 1
+		parent.IsMaster = true
+		parent.Slaves = append(parent.Slaves, child)
+	}
 }
