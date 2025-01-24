@@ -129,8 +129,3 @@ func (d *DiscoverManager) Discover() (nodeTree *Tree, err error) {
 	nodeTree, err = d.findSlavesInfo(rootNode)
 	return
 }
-
-// 获取当前节点的master
-// 获取当前节点的所有slaves
-// mysql连接到相应的host补全信息
-//
