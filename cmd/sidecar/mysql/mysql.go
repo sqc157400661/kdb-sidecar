@@ -5,6 +5,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/spf13/cobra"
 	"github.com/sqc157400661/helper/mysql"
+	"github.com/sqc157400661/kdb-sidecar/cmd/sidecar/server"
 	"github.com/sqc157400661/kdb-sidecar/internal"
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/config"
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/health"
@@ -125,6 +126,9 @@ func (o *SidecarOption) run(args []string) (err error) {
 			return err
 		}
 	}
+	go func() {
+		_ = server.StartServer()
+	}()
 	// detecting and building data backup service
 	util.ExitSignalHandler(func() {
 		// services stop

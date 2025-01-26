@@ -3,6 +3,7 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	base "github.com/sqc157400661/helper/api"
+	"github.com/sqc157400661/kdb-sidecar/internal/biz"
 	"github.com/sqc157400661/kdb-sidecar/internal/types"
 )
 
@@ -28,5 +29,11 @@ func (e Instance) GetPage(c *gin.Context) {
 		e.Error(500, err, err.Error())
 		return
 	}
-	e.OK(nil, "查询成功")
+	list, err := biz.ListInstance(req)
+	if err != nil {
+		e.Logger.Error(err)
+		e.Error(500, err, err.Error())
+		return
+	}
+	e.OK(list, "查询成功")
 }
