@@ -21,3 +21,12 @@ func TestPrintTable(t *testing.T) {
 	TableOutput(users)
 	TableOutput([]User{})
 }
+
+func TestFormatOutToStdout(t *testing.T) {
+	users := []User{
+		{ID: 1, Name: "Alice", Age: 30},
+		{ID: 2, Name: "Bob", Age: 25},
+		{ID: 3, Name: "Charlie", Age: 35},
+	}
+	FormatOutToStdout(users, "json")
+}

@@ -11,7 +11,11 @@ import (
 func FormatOutToStdout[T any](data []T, format string) {
 	switch format {
 	case "json", "JSON":
-		fmt.Println(json.Marshal(data))
+		byteData, err := json.Marshal(data)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(byteData))
 	case "table", "TAB", "TABLE":
 		TableOutput(data)
 	default:
