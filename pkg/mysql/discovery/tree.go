@@ -5,6 +5,9 @@ import "sync"
 type InstanceNode struct {
 	Host       string
 	Port       int
+	ServerUUID string
+	ServerID   int
+	Version    string
 	IsReadonly bool
 	IsMaster   bool
 	IsBad      bool
@@ -55,6 +58,21 @@ func (t *Tree) addNodeIfNotExist(node *InstanceNode) {
 	defer t.mu.Unlock()
 	if !t.Exist(node) {
 		t.nodes[node.Host] = node
+	}
+}
+func (t *Tree) ForEach(f func(*InstanceNode)) {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+	queue := []*InstanceNode{t.root}
+	for len(queue) > 0 {
+		var tmp []*InstanceNode
+		for _, node := range queue {
+			if len(node.Slaves) > 0 {
+				tmp = append(tmp, node.Slaves...)
+			}
+			f(node)
+		}
+		queue = tmp
 	}
 }
 
