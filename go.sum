@@ -303,6 +303,8 @@ github.com/sqc157400661/helper v0.0.4/go.mod h1:MHHxGNh5ycU3hcGis9pFUQwq0FjF3UhS
 github.com/sqc157400661/helper v0.0.5/go.mod h1:MHHxGNh5ycU3hcGis9pFUQwq0FjF3UhSRQ+DAqrjy70=
 github.com/sqc157400661/helper v0.0.6/go.mod h1:MHHxGNh5ycU3hcGis9pFUQwq0FjF3UhSRQ+DAqrjy70=
 github.com/sqc157400661/helper v0.0.7/go.mod h1:jCxDimUV4Gl+57au2ASkMyTspe0vh85JoHc2c83Qwgc=
+github.com/sqc157400661/helper v0.0.8/go.mod h1:jCxDimUV4Gl+57au2ASkMyTspe0vh85JoHc2c83Qwgc=
+github.com/sqc157400661/helper v0.0.9/go.mod h1:jCxDimUV4Gl+57au2ASkMyTspe0vh85JoHc2c83Qwgc=
 github.com/sqc157400661/util v0.0.9 h1:EuSpU/QdMAaJa8hQHxuM0iTKoH2JOL+lg2wwjLXspE0=
 github.com/sqc157400661/util v0.0.9/go.mod h1:CinFHzQalPzyUf3xSqGTJk9+MuGaFLyavBvpzGvwVAU=
 github.com/stoewer/go-strcase v1.2.0/go.mod h1:IBiWB2sKIp3wVVQ3Y035++gc+knqhUQag1KpM8ahLw8=

@@ -22,14 +22,13 @@ type ReplicationService struct {
 	refreshChan chan struct{}
 }
 
-func NewReplicationService(engine *xorm.Engine, replication config.Replication, seeker Seeker) *ReplicationService {
+func NewReplicationService(executor *mysql.Executor, replication config.Replication, seeker Seeker) *ReplicationService {
 	return &ReplicationService{
-		engine:      engine,
 		seeker:      seeker,
 		loopSecond:  5,
 		replConf:    replication,
 		refreshChan: make(chan struct{}, 0),
-		executor:    mysql.NewExecutorByEngine(engine),
+		executor:    executor,
 	}
 }
 

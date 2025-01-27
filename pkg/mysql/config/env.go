@@ -21,6 +21,7 @@ const K8SNamespaceEnv = "NAMESPACE"
 const InitMySQLRoleEnv = "ROLE"
 const HostnameEnv = "KDB_HOSTNAME"
 const DeployArchEnv = "DEPLOY_ARCH"
+const PodIPEnv = "KDB_POD_IP"
 
 var ClusterID string
 var MySQLServerID string
@@ -29,6 +30,7 @@ var K8SNamespace string
 var InitMySQLRole string
 var Hostname string
 var DeployArch string
+var PodIP string
 
 func init() {
 	ClusterID = os.Getenv(ClusterIDEnv)
@@ -39,6 +41,7 @@ func init() {
 	InitMySQLRole = os.Getenv(InitMySQLRoleEnv)
 	Hostname = os.Getenv(HostnameEnv)
 	DeployArch = os.Getenv(DeployArchEnv)
+	PodIP = os.Getenv(PodIPEnv)
 }
 
 // oss

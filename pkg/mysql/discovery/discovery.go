@@ -11,13 +11,46 @@ type Discovery interface {
 	Discover(host string) error
 }
 
+type option struct {
+	currentHost string
+	currentPort int
+}
+type OptionFunc func(*option)
+
+func WithCurrentHost(host string) OptionFunc {
+	return func(o *option) {
+		o.currentHost = host
+	}
+}
+
+func WithCurrentPort(port int) OptionFunc {
+	return func(o *option) {
+		o.currentPort = port
+	}
+}
+
 type DiscoverManager struct {
-	ReplUser     string `yaml:"repl_user" json:"repl_user"`
-	ReplPassword string `yaml:"repl_password" json:"repl_password"`
-	currentHost  string
-	currentPort  int
+	option
+	replUser     string `yaml:"repl_user"`
+	replPassword string `yaml:"repl_password"`
 	executors    map[string]*mysql.Executor
 	sync.RWMutex
+}
+
+func NewDiscoveryManager(replUser, replPassword string, opts ...OptionFunc) *DiscoverManager {
+	var opt = option{
+		currentHost: "localhost",
+		currentPort: 3306,
+	}
+	for _, fn := range opts {
+		fn(&opt)
+	}
+	return &DiscoverManager{
+		option:       opt,
+		executors:    map[string]*mysql.Executor{},
+		replUser:     replUser,
+		replPassword: replPassword,
+	}
 }
 
 func (d *DiscoverManager) getRootInfo() (rootNode *InstanceNode, err error) {
@@ -63,6 +96,14 @@ func (d *DiscoverManager) findSlavesInfo(rootNode *InstanceNode) (nodeTree *Tree
 			if err != nil {
 				return
 			}
+			node.Version, err = parentExecutor.Version()
+			if err != nil {
+				return
+			}
+			node.ServerID, err = parentExecutor.ServerID()
+			if err != nil {
+				return
+			}
 			// Attempt SHOW SLAVE HOSTS before PROCESSLIST
 			slaveHosts, err = parentExecutor.ShowSlaveHosts()
 			if err != nil {
@@ -73,7 +114,12 @@ func (d *DiscoverManager) findSlavesInfo(rootNode *InstanceNode) (nodeTree *Tree
 				return
 			}
 			for _, row := range slaveHosts {
-				nodeTree.AddChildNode(node, &InstanceNode{Host: row.Host, Port: row.Port})
+				nodeTree.AddChildNode(node, &InstanceNode{
+					Host:       row.Host,
+					Port:       row.Port,
+					ServerUUID: row.SlaveUUID,
+					ServerID:   row.ServerID,
+				})
 			}
 			if len(slaveHosts) == 0 {
 				results, err := parentExecutor.ShowProcesslist()
@@ -87,7 +133,9 @@ func (d *DiscoverManager) findSlavesInfo(rootNode *InstanceNode) (nodeTree *Tree
 					}
 				}
 			}
-			nextQueue = append(nextQueue, node.Slaves...)
+			if len(node.Slaves) > 0 {
+				nextQueue = append(nextQueue, node.Slaves...)
+			}
 		}
 		queue = nextQueue
 		dept++
@@ -106,8 +154,8 @@ func (d *DiscoverManager) getExecutor(host string, port int) (executor *mysql.Ex
 	defer d.Unlock()
 	var engine *xorm.Engine
 	engine, err = mysql.NewMySQLEngine(mysql.ConnectInfo{
-		User:   d.ReplUser,
-		Passwd: d.ReplPassword,
+		User:   d.replUser,
+		Passwd: d.replPassword,
 		Host:   host,
 		Port:   port,
 	}, true, false)

@@ -9,6 +9,7 @@ import (
 	"github.com/sqc157400661/kdb-sidecar/internal"
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/config"
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/health"
+	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/meta_service"
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/repl"
 	"github.com/sqc157400661/kdb-sidecar/pkg/mysql/user"
 	"github.com/sqc157400661/kdb-sidecar/pkg/service"
@@ -110,9 +111,11 @@ func (o *SidecarOption) run(args []string) (err error) {
 	}
 	services := InitCommonService(engine)
 	seeker := repl.NewKubeSeeker(cliSet)
+	executor := mysql.NewExecutorByEngine(engine)
 	switch config.DeployArch {
 	case internal.MySQLMasterReplicaDeployArch, internal.MySQLMasterSlaveDeployArch:
-		services = append(services, repl.NewReplicationService(engine, o.config.Replication, seeker))
+		services = append(services, repl.NewReplicationService(executor, o.config.Replication, seeker))
+		services = append(services, meta_service.NewMetaService(executor, o.config))
 	case internal.MySQLSingleDeployArch:
 	case internal.MySQLMGRDeployArch:
 	default:

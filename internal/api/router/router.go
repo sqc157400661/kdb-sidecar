@@ -29,9 +29,16 @@ func InitRouter() *gin.Engine {
 // NoCheckRoleRouter 不需要认证的路由
 func NoCheckRoleRouter(r *gin.Engine) {
 	v1Group := r.Group("/v1")
-	monitorRouter := v1Group.Group("/mysql")
+	// system apis
+	systemGroup := v1Group.Group("/system")
+	{
+		sys := v1.System{}
+		systemGroup.GET("/pod", sys.PodInfo)
+	}
+	// mysql apis
+	mysqlRouter := v1Group.Group("/mysql")
 	{
 		m := v1.Instance{}
-		monitorRouter.GET("/instance", m.GetPage)
+		mysqlRouter.GET("/instance", m.GetPage)
 	}
 }
