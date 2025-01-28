@@ -59,6 +59,7 @@ func (d *DiscoverManager) getRootInfo() (rootNode *InstanceNode, err error) {
 		return
 	}
 	var slaveStatus mysql.SlaveStatus
+	var masterExecutor *mysql.Executor
 	slaveStatus, err = currentExecutor.ShowSlaveStatus()
 	if err != nil {
 		return
@@ -67,7 +68,7 @@ func (d *DiscoverManager) getRootInfo() (rootNode *InstanceNode, err error) {
 	for slaveStatus.MasterHost != "" {
 		rootNode.Host = slaveStatus.MasterHost
 		rootNode.Port = slaveStatus.MasterPort
-		masterExecutor, err := d.getExecutor(rootNode.Host, rootNode.Port)
+		masterExecutor, err = d.getExecutor(rootNode.Host, rootNode.Port)
 		if err != nil {
 			return
 		}
@@ -122,7 +123,8 @@ func (d *DiscoverManager) findSlavesInfo(rootNode *InstanceNode) (nodeTree *Tree
 				})
 			}
 			if len(slaveHosts) == 0 {
-				results, err := parentExecutor.ShowProcesslist()
+				var results []mysql.ProcessList
+				results, err = parentExecutor.ShowProcesslist()
 				if err != nil {
 					return
 				}

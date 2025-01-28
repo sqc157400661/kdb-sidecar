@@ -1,5 +1,7 @@
 FROM registry.access.redhat.com/ubi8-minimal
 
+ARG XtraBackupVersion=8.0.35
+
 LABEL maintainers="kdbdeveloper"
 LABEL description="kdb-sidecar"
 
