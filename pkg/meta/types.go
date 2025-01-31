@@ -45,3 +45,12 @@ func (i *Instance) Convert(node *discovery.InstanceNode) {
 	i.Dept = node.Dept
 
 }
+
+type BackupPlan struct {
+	BackupType    string `xorm:"backup_type" json:"backup_type,omitempty"`       // 备份类型 full incr
+	Week          string `xorm:"week" json:"week,omitempty"`                     // 全量备份周的计划
+	Hour          string `xorm:"hour" json:"hour,omitempty"`                     // 全量备份小时的计划
+	RetentionDays uint32 `xorm:"retention_days" json:"retention_days,omitempty"` // 保留天数
+	JobID         int64  `xorm:"job_id" json:"job_id,omitempty"`                 // jobID
+	Status        string `json:"status" xorm:"status"`                           // 状态
+}

@@ -22,6 +22,7 @@ type Backup struct {
 	Oss     OssConfig `yaml:"oss" json:"oss"`
 	S3      S3Config  `yaml:"s3" json:"s3"`
 }
+
 type MySQLConfig struct {
 	// Configure the data center address.
 	// If the configuration is assigned a value, it will be prioritized for use.

@@ -1,9 +1,25 @@
 FROM registry.access.redhat.com/ubi8-minimal
 
-ARG XtraBackupVersion=8.0.35
-
 LABEL maintainers="kdbdeveloper"
 LABEL description="kdb-sidecar"
+
+ARG XtraBackupVersion=8.0.35
+
+
+# 更新系统并安装必要的工具
+RUN microdnf update -y && \
+    microdnf install -y wget && \
+    microdnf clean all
+
+# 下载 percona-xtrabackup-80-8.0.35-32.1.el8.x86_64.rpm
+RUN wget https://downloads.percona.com/downloads/Percona-XtraBackup-LATEST/Percona-XtraBackup-8.0.35-32/binary/redhat/8/x86_64/percona-xtrabackup-80-8.0.35-32.1.el8.x86_64.rpm
+
+# 安装 percona-xtrabackup-80-8.0.35-32.1.el8.x86_64.rpm
+RUN microdnf install -y percona-xtrabackup-80-8.0.35-32.1.el8.x86_64.rpm && \
+    microdnf clean all
+
+# 清理下载的 RPM 文件
+RUN rm percona-xtrabackup-80-8.0.35-32.1.el8.x86_64.rpm
 
 RUN microdnf install -y vim iputils
 

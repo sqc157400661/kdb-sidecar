@@ -2,6 +2,10 @@ FROM silentred/debian:slim-util
 
 ARG XBVersion=8.0.35
 
+LABEL maintainers="kdbdeveloper"
+LABEL description="kdb-sidecar"
+
+
 # install supervisor, tools are in image silentred/debian:slim-util
 RUN apt-get update && apt-get install -y supervisor wget procps \
     vim dnsutils curl inetutils-ping net-tools cron
