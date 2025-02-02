@@ -12,8 +12,8 @@ type Instance struct {
 }
 
 // GetPage
-// @Summary 获取集群节点拓扑列表
-// @Description 获取集群节点拓扑列表
+// @Summary 获取实例列表
+// @Description 获取实例列表
 // @Tags GetInstanceList
 // @ID get-instance-list
 // @Param status query string false "status"

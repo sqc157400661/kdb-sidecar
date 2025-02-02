@@ -24,6 +24,10 @@ type Instance struct {
 	Extra          string `xorm:"varchar(255) 'extra'" json:"extra" tab:"extra"`
 }
 
+func (i *Instance) TableName() string {
+	return "instance"
+}
+
 func (i *Instance) Convert(node *discovery.InstanceNode) {
 	i.ClusterID = config.ClusterID
 	if node.IsMaster {
@@ -47,10 +51,14 @@ func (i *Instance) Convert(node *discovery.InstanceNode) {
 }
 
 type BackupPlan struct {
-	BackupType    string `xorm:"backup_type" json:"backup_type,omitempty"`       // 备份类型 full incr
-	Week          string `xorm:"week" json:"week,omitempty"`                     // 全量备份周的计划
-	Hour          string `xorm:"hour" json:"hour,omitempty"`                     // 全量备份小时的计划
-	RetentionDays uint32 `xorm:"retention_days" json:"retention_days,omitempty"` // 保留天数
-	JobID         int64  `xorm:"job_id" json:"job_id,omitempty"`                 // jobID
-	Status        string `json:"status" xorm:"status"`                           // 状态
+	BackupType    string `xorm:"backup_type" json:"backup_type,omitempty" tab:"BackupType"`          // 备份类型 full incr
+	Days          string `xorm:"days" json:"days,omitempty" tab:"Days"`                              // 全量备份周的计划
+	Hour          string `xorm:"hour" json:"hour,omitempty" tab:"Hour"`                              // 全量备份小时的计划
+	RetentionDays uint32 `xorm:"retention_days" json:"retention_days,omitempty" tab:"RetentionDays"` // 保留天数
+	JobID         int64  `xorm:"job_id" json:"job_id,omitempty" tab:"JobID"`                         // jobID
+	Status        string `json:"status" xorm:"status" tab:"Status"`                                  // 状态
+}
+
+func (p *BackupPlan) TableName() string {
+	return "backup_plan"
 }
