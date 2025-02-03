@@ -43,7 +43,7 @@ func (e Backup) GetPage(c *gin.Context) {
 // @Description 修改备份计划
 // @Router /api/v1/backup-plan [post]
 func (e Backup) Modify(c *gin.Context) {
-	req := types.BackupPlanHandleReq{}
+	req := types.ModifyBackupPlanReq{}
 	err := e.MakeContext(c).
 		Bind(&req).
 		Errors
